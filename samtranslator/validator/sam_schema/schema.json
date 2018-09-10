@@ -2,7 +2,127 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "additionalProperties": false,
   "definitions": {
-    "CFC::Function": {
+    "BCE::Serverless::Api": {
+      "additionalProperties": false,
+      "properties": {
+        "DeletionPolicy": {
+          "enum": [
+            "Delete",
+            "Retain",
+            "Snapshot"
+          ],
+          "type": "string"
+        },
+        "DependsOn": {
+          "anyOf": [
+            {
+              "pattern": "^[a-zA-Z0-9]+$",
+              "type": "string"
+            },
+            {
+              "items": {
+                "pattern": "^[a-zA-Z0-9]+$",
+                "type": "string"
+              },
+              "type": "array"
+            }
+          ]
+        },
+        "Metadata": {
+          "type": "object"
+        },
+        "Properties": {
+          "additionalProperties": false,
+          "properties": {
+            "CacheClusterEnabled": {
+              "type": "boolean"
+            },
+            "CacheClusterSize": {
+              "type": "string"
+            },
+            "DefinitionBody": {
+              "type": "object"
+            },
+            "DefinitionUri": {
+              "anyOf": [
+                {
+                  "type": [
+                    "string"
+                  ]
+                },
+                {
+                  "$ref": "#/definitions/BCE::Serverless::Api.S3Location"
+                }
+              ]
+            },
+            "Name": {
+              "type": "string"
+            },
+            "StageName": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "object"
+                }
+              ]
+            },
+            "Variables": {
+              "additionalProperties": false,
+              "patternProperties": {
+                "^[a-zA-Z0-9]+$": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "object"
+                    }
+                  ]
+                }
+              },
+              "type": "object"
+            }
+          },
+          "required": [
+            "StageName"
+          ],
+          "type": "object"
+        },
+        "Type": {
+          "enum": [
+            "BCE::Serverless::Api"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "Type",
+        "Properties"
+      ],
+      "type": "object"
+    },
+    "BCE::Serverless::Api.S3Location": {
+      "additionalProperties": false,
+      "properties": {
+        "Bucket": {
+          "type": "string"
+        },
+        "Key": {
+          "type": "string"
+        },
+        "Version": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "Bucket",
+        "Key"
+      ],
+      "type": "object"
+    },
+    "BCE::Serverless::Function": {
       "additionalProperties": false,
       "properties": {
         "DeletionPolicy": {
@@ -52,7 +172,7 @@
                           ]
                         },
                         {
-                          "$ref": "#/definitions/CFC::Function.BosLocation"
+                          "$ref": "#/definitions/BCE::Serverless::Function.S3Location"
                         }
                       ]
                     }
@@ -62,17 +182,20 @@
             },
             {
               "properties": {
+                "DeadLetterQueue": {
+                  "$ref": "#/definitions/BCE::Serverless::Function.DeadLetterQueue"
+                },
                 "Description": {
                   "type": "string"
                 },
                 "Environment": {
-                  "$ref": "#/definitions/CFC::Function.FunctionEnvironment"
+                  "$ref": "#/definitions/BCE::Serverless::Function.FunctionEnvironment"
                 },
                 "Events": {
                   "additionalProperties": false,
                   "patternProperties": {
                     "^[a-zA-Z0-9]+$": {
-                      "$ref": "#/definitions/CFC::Function.EventSource"
+                      "$ref": "#/definitions/BCE::Serverless::Function.EventSource"
                     }
                   },
                   "type": "object"
@@ -81,6 +204,9 @@
                   "type": "string"
                 },
                 "Handler": {
+                  "type": "string"
+                },
+                "KmsKeyArn": {
                   "type": "string"
                 },
                 "MemorySize": {
@@ -100,11 +226,11 @@
                       "type": "array"
                     },
                     {
-                      "$ref": "#/definitions/CFC::Function.IAMPolicyDocument"
+                      "$ref": "#/definitions/BCE::Serverless::Function.IAMPolicyDocument"
                     },
                     {
                       "items": {
-                        "$ref": "#/definitions/CFC::Function.IAMPolicyDocument"
+                        "$ref": "#/definitions/BCE::Serverless::Function.IAMPolicyDocument"
                       },
                       "type": "array"
                     }
@@ -123,8 +249,23 @@
                 "Runtime": {
                   "type": "string"
                 },
+                "Tags": {
+                  "additionalProperties": false,
+                  "patternProperties": {
+                    "^[a-zA-Z0-9]+$": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
                 "Timeout": {
                   "type": "number"
+                },
+                "Tracing": {
+                  "type": "string"
+                },
+                "VpcConfig": {
+                  "$ref": "#/definitions/BCE::Serverless::Function.VpcConfig"
                 }
               },
               "required": [
@@ -137,7 +278,7 @@
         },
         "Type": {
           "enum": [
-            "CFC::Function"
+            "BCE::Serverless::Function"
           ],
           "type": "string"
         }
@@ -148,7 +289,7 @@
       ],
       "type": "object"
     },
-    "CFC::Function.DuerosSkillEvent": {
+    "BCE::Serverless::Function.AlexaSkillEvent": {
       "additionalProperties": false,
       "properties": {
         "Variables": {
@@ -163,7 +304,7 @@
       },
       "type": "object"
     },
-    "CFC::Function.ApiEvent": {
+    "BCE::Serverless::Function.ApiEvent": {
       "additionalProperties": false,
       "properties": {
         "Method": {
@@ -189,19 +330,113 @@
       ],
       "type": "object"
     },
-    "CFC::Function.EventSource": {
+    "BCE::Serverless::Function.CloudWatchEventEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "Input": {
+          "type": "string"
+        },
+        "InputPath": {
+          "type": "string"
+        },
+        "Pattern": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "Pattern"
+      ],
+      "type": "object"
+    },
+    "BCE::Serverless::Function.LogEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "LogGroupName": {
+          "type": "string"
+        },
+        "FilterPattern": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "LogGroupName",
+        "FilterPattern"
+      ],
+      "type": "object"
+    },
+    "BCE::Serverless::Function.DeadLetterQueue": {
+      "additionalProperties": false,
+      "properties": {
+        "TargetArn": {
+          "type": "string"
+        },
+        "Type": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "TargetArn",
+        "Type"
+      ],
+      "type": "object"
+    },
+    "BCE::Serverless::Function.DynamoDBEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "BatchSize": {
+          "type": "number"
+        },
+        "StartingPosition": {
+          "type": "string"
+        },
+        "Stream": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "BatchSize",
+        "StartingPosition",
+        "Stream"
+      ],
+      "type": "object"
+    },
+    "BCE::Serverless::Function.EventSource": {
       "additionalProperties": false,
       "properties": {
         "Properties": {
           "anyOf": [
             {
-              "$ref": "#/definitions/CFC::Function.BosEvent"
+              "$ref": "#/definitions/BCE::Serverless::Function.S3Event"
             },
             {
-              "$ref": "#/definitions/CFC::Function.ApiEvent"
+              "$ref": "#/definitions/BCE::Serverless::Function.SNSEvent"
             },
             {
-              "$ref": "#/definitions/CFC::Function.DuerosSkillEvent"
+              "$ref": "#/definitions/BCE::Serverless::Function.KinesisEvent"
+            },
+            {
+              "$ref": "#/definitions/BCE::Serverless::Function.SQSEvent"
+            },
+            {
+              "$ref": "#/definitions/BCE::Serverless::Function.DynamoDBEvent"
+            },
+            {
+              "$ref": "#/definitions/BCE::Serverless::Function.ApiEvent"
+            },
+            {
+              "$ref": "#/definitions/BCE::Serverless::Function.ScheduleEvent"
+            },
+            {
+              "$ref": "#/definitions/BCE::Serverless::Function.CloudWatchEventEvent"
+            },
+            {
+              "$ref": "#/definitions/BCE::Serverless::Function.LogEvent"
+            },
+            {
+              "$ref": "#/definitions/BCE::Serverless::Function.IoTRuleEvent"
+            },
+            {
+              "$ref": "#/definitions/BCE::Serverless::Function.AlexaSkillEvent"
             }
           ]
         },
@@ -215,7 +450,7 @@
       ],
       "type": "object"
     },
-    "CFC::Function.FunctionEnvironment": {
+    "BCE::Serverless::Function.FunctionEnvironment": {
       "additionalProperties": false,
       "properties": {
         "Variables": {
@@ -233,7 +468,7 @@
       ],
       "type": "object"
     },
-    "CFC::Function.IAMPolicyDocument": {
+    "BCE::Serverless::Function.IAMPolicyDocument": {
       "additionalProperties": false,
       "properties": {
         "Statement": {
@@ -248,7 +483,62 @@
       ],
       "type": "object"
     },
-    "CFC::Function.BosEvent": {
+    "BCE::Serverless::Function.IoTRuleEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "AwsIotSqlVersion": {
+          "type": "string"
+        },
+        "Sql": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "Sql"
+      ],
+      "type": "object"
+    },
+    "BCE::Serverless::Function.KinesisEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "BatchSize": {
+          "type": "number"
+        },
+        "StartingPosition": {
+          "type": "string"
+        },
+        "Stream": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "StartingPosition",
+        "Stream"
+      ],
+      "type": "object"
+    },
+    "BCE::Serverless::Function.SQSEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "BatchSize": {
+          "type": "number"
+        },
+        "Queue": {
+          "anyOf": [{
+              "type": "string"
+            },
+            {
+              "type": "object"
+            }
+          ]
+        }
+      },
+      "required": [
+        "Queue"
+      ],
+      "type": "object"
+    },
+    "BCE::Serverless::Function.S3Event": {
       "additionalProperties": false,
       "properties": {
         "Bucket": {
@@ -275,6 +565,9 @@
               "type": "array"
             }
           ]
+        },
+        "Filter": {
+          "$ref": "#/definitions/BCE::Serverless::Function.S3NotificationFilter"
         }
       },
       "required": [
@@ -283,7 +576,7 @@
       ],
       "type": "object"
     },
-    "CFC::Function.BosLocation": {
+    "BCE::Serverless::Function.S3Location": {
       "additionalProperties": false,
       "properties": {
         "Bucket": {
@@ -299,6 +592,191 @@
       "required": [
         "Bucket",
         "Key"
+      ],
+      "type": "object"
+    },
+    "BCE::Serverless::Function.S3NotificationFilter": {
+      "additionalProperties": false,
+      "properties": {
+        "S3Key": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "object"
+            }
+          ]
+        }
+      },
+      "required": [
+        "S3Key"
+      ],
+      "type": "object"
+    },
+    "BCE::Serverless::Function.SNSEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "Topic": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "Topic"
+      ],
+      "type": "object"
+    },
+    "BCE::Serverless::Function.ScheduleEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "Input": {
+          "type": "string"
+        },
+        "Schedule": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "Schedule"
+      ],
+      "type": "object"
+    },
+    "BCE::Serverless::Function.VpcConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "SecurityGroupIds": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "SubnetIds": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "SubnetIdsUsingRef": {
+          "items": {
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "SecurityGroupIds",
+        "SubnetIds"
+      ],
+      "type": "object"
+    },
+    "BCE::Serverless::SimpleTable": {
+      "additionalProperties": false,
+      "properties": {
+        "DeletionPolicy": {
+          "enum": [
+            "Delete",
+            "Retain",
+            "Snapshot"
+          ],
+          "type": "string"
+        },
+        "DependsOn": {
+          "anyOf": [
+            {
+              "pattern": "^[a-zA-Z0-9]+$",
+              "type": "string"
+            },
+            {
+              "items": {
+                "pattern": "^[a-zA-Z0-9]+$",
+                "type": "string"
+              },
+              "type": "array"
+            }
+          ]
+        },
+        "Metadata": {
+          "type": "object"
+        },
+        "Properties": {
+          "additionalProperties": false,
+          "properties": {
+            "PrimaryKey": {
+              "$ref": "#/definitions/BCE::Serverless::SimpleTable.PrimaryKey"
+            },
+            "ProvisionedThroughput": {
+              "$ref": "#/definitions/BCE::Serverless::SimpleTable.ProvisionedThroughput"
+            },
+            "SSESpecification": {
+              "$ref": "#/definitions/BCE::Serverless::SimpleTable.SSESpecification"
+            }
+          },
+          "type": "object"
+        },
+        "Type": {
+          "enum": [
+            "BCE::Serverless::SimpleTable"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "Type"
+      ],
+      "type": "object"
+    },
+    "BCE::Serverless::SimpleTable.PrimaryKey": {
+      "additionalProperties": false,
+      "properties": {
+        "Name": {
+          "type": "string"
+        },
+        "Type": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "Type"
+      ],
+      "type": "object"
+    },
+    "BCE::Serverless::SimpleTable.ProvisionedThroughput": {
+      "additionalProperties": false,
+      "properties": {
+        "ReadCapacityUnits": {
+          "type": "number"
+        },
+        "WriteCapacityUnits": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "WriteCapacityUnits"
+      ],
+      "type": "object"
+    },
+    "BCE::Serverless::SimpleTable.SSESpecification": {
+      "additionalProperties": false,
+      "properties": {
+        "SSEEnabled": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "SSEEnabled"
+      ],
+      "type": "object"
+    },
+    "CloudFormationResource": {
+      "additionalProperties": true,
+      "properties": {
+        "Type": {
+          "pattern": "^(?!^BCE::Serverless).*",
+          "type": "string"
+        }
+      },
+      "required": [
+        "Type"
       ],
       "type": "object"
     },
@@ -344,6 +822,25 @@
             "Number",
             "List<Number>",
             "CommaDelimitedList",
+            "AWS::EC2::AvailabilityZone::Name",
+            "AWS::EC2::Image::Id",
+            "AWS::EC2::Instance::Id",
+            "AWS::EC2::KeyPair::KeyName",
+            "AWS::EC2::SecurityGroup::GroupName",
+            "AWS::EC2::SecurityGroup::Id",
+            "AWS::EC2::Subnet::Id",
+            "AWS::EC2::Volume::Id",
+            "AWS::EC2::VPC::Id",
+            "AWS::Route53::HostedZone::Id",
+            "List<AWS::EC2::AvailabilityZone::Name>",
+            "List<AWS::EC2::Image::Id>",
+            "List<AWS::EC2::Instance::Id>",
+            "List<AWS::EC2::SecurityGroup::GroupName>",
+            "List<AWS::EC2::SecurityGroup::Id>",
+            "List<AWS::EC2::Subnet::Id>",
+            "List<AWS::EC2::Volume::Id>",
+            "List<AWS::EC2::VPC::Id>",
+            "List<AWS::Route53::HostedZone::Id>",
             "List<String>"
           ],
           "type": "string"
@@ -353,12 +850,31 @@
         "Type"
       ],
       "type": "object"
+    },
+    "Tag": {
+      "additionalProperties": false,
+      "properties": {
+        "Key": {
+          "type": "string"
+        },
+        "Value": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "object"
+            }
+          ]
+        }
+      },
+      "type": "object"
     }
   },
   "properties": {
-    "BSAMTemplateFormatVersion": {
+    "AWSTemplateFormatVersion": {
       "enum": [
-        "2018-08-30"
+        "2010-09-09"
       ],
       "type": "string"
     },
@@ -413,14 +929,29 @@
       "additionalProperties": false,
       "patternProperties": {
         "^[a-zA-Z0-9]+$": {
-          "anyOf": [            
+          "anyOf": [
             {
-              "$ref": "#/definitions/CFC::Function"
-            }                   
+              "$ref": "#/definitions/BCE::Serverless::Api"
+            },
+            {
+              "$ref": "#/definitions/BCE::Serverless::Function"
+            },
+            {
+              "$ref": "#/definitions/BCE::Serverless::SimpleTable"
+            },
+            {
+              "$ref": "#/definitions/CloudFormationResource"
+            }
           ]
         }
       },
       "type": "object"
+    },
+    "Transform": {
+      "enum": [
+        "BCE::Serverless-2016-10-31"
+      ],
+      "type": "string"
     },
     "Globals": {
       "type": "object"
