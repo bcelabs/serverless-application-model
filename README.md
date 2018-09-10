@@ -1,25 +1,8 @@
-[![Build Status](https://travis-ci.org/awslabs/serverless-application-model.svg?branch=develop)](https://travis-ci.org/awslabs/serverless-application-model)
-[![PyPI version](https://badge.fury.io/py/aws-sam-translator.svg)](https://badge.fury.io/py/aws-sam-translator)
+# Baidu Serverless Application Model (BSAM) -- README
+可以使用BSAM来简洁的定义CFC函数应用。这个GitHub项目是BSAM的起点。 它包含BSAM规范，有关模型的一般信息以及常见应用程序的示例。
 
-![Logo](aws_sam_introduction.png)
+BSAM规范的定义和实现是在Apache 2.0许可下开源的。 当前版本的BSAM规范可在[BSAM 2018-08-30](versions/2018-08-30.md)中可获得。
 
-# AWS Serverless Application Model (AWS SAM)
-You can use SAM to define serverless applications in simple and clean syntax.
-
-This GitHub project is the starting point for AWS SAM. It contains the SAM specification, the code that translates SAM templates into AWS CloudFormation stacks, general information about the model, and examples of common applications.
-
-The SAM specification and implementation are open sourced under the Apache 2.0 license. The current version of the SAM specification is available at [AWS SAM 2016-10-31](versions/2016-10-31.md).
-
-
-## Creating a serverless application using SAM
-To create a serverless application using SAM, first, you create a SAM template: a JSON or YAML configuration file that describes your Lambda functions, API endpoints and the other resources in your application. Then, you test, upload, and deploy your application using the [SAM Local CLI](https://github.com/awslabs/aws-sam-local). During deployment, SAM automatically translates your application’s specification into CloudFormation syntax, filling in default values for any unspecified properties and determining the appropriate mappings and invocation permissions to setup for any Lambda functions.
-
-[Read the How-To Guide](HOWTO.md) and see [examples](examples/) to learn how to define & deploy serverless applications using SAM.
-
-
-## Contributing new features and enhancements to SAM
-You can build serverless applications faster and further simplify your development of serverless applications by defining new event sources, new resource types, and new parameters within SAM. Additionally, you can modify SAM to integrate it with other frameworks and deployment providers from the community for building serverless applications.
-
-[Read the Development Guide](DEVELOPMENT_GUIDE.rst) for in-depth information on how to start making changes.
-
-[Join the SAM developers channel (#samdev) on Slack](https://awssamopensource.splashthat.com/) to collaborate with fellow community members and the AWS SAM team.
+## 使用SAM创建无服务器应用程序
+要使用BSAM创建CFC应用程序，首先要创建BSAM模板：JSON或YAML配置文件，用于描述CFC函数和应用程序中的其他资源。然后，使用[BSAM Local CLI](https://github.com/bcelabs/bce-sam-cli)测试，上传和部署应用程序。在部署期间，BSAM CLI会自动填写任何未指定属性的默认值，并确定适当的映射和调用权限，以便为任何CFC函数进行设置。
+[查看此文档](HOWTO.md) 和 [例子](examples/) 来了解如何定义和部署CFC应用。
