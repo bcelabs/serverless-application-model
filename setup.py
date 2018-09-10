@@ -50,13 +50,11 @@ def read_requirements(req='base.txt'):
 
 
 setup(
-    name='aws-sam-translator',
+    name='bce-sam-translator',
     version=read_version(),
-    description='AWS SAM Translator is a library that transform SAM templates into AWS CloudFormation templates',
+    description='BCE SAM Translator',
     long_description=read('README.md'),
-    author='Amazon Web Services',
-    author_email='aws-sam-developers@amazon.com',
-    url='https://github.com/awslabs/serverless-application-model',
+    url='https://github.com/bcelabs/serverless-application-model',
     license='Apache License 2.0',
     # Exclude all but the code folders
     packages=find_packages(exclude=('tests', 'docs', 'examples', 'versions')),
@@ -65,7 +63,7 @@ setup(
     extras_require={
         'dev': read_requirements('dev.txt')
     },
-    keywords="AWS SAM Serverless Application Model",
+    keywords="BCE SAM Serverless Application Model",
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Console',
