@@ -1,4 +1,4 @@
-0#如何使用SAM创建CFC应用程序
+#如何使用SAM创建CFC应用程序
 
 无服务器应用程序模型（SAM）描述了CFC应用程序中使用的资源。
 您可以将无服务器应用程序定义为SAM模板 - JSON或YAML
@@ -28,4 +28,4 @@ MyFunction:
 
 
 ## Deploy
-将应用打包后，可以上传至CFC的线上环境中。`sam deploy`命令会去`~/.bce/credential`中读取用户的`AK/SK`,并读取`~/.bce/config`中的`region`设置，将`sam package`命令生成的代码包上传。
+将应用打包后，可以上传至CFC的线上环境中。`sam deploy`命令会去`~/.bce/credential`中读取用户的`AK/SK`,并读取`~/.bce/config`中的`region`设置，将`sam package`命令生成的代码包上传。如果之前在同类cli工具中配置过相应的设置项则命令可正常工作，否则可以运行`sam config`命令，并按提示设置相应的选项。
